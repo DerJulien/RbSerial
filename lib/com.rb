@@ -38,6 +38,12 @@ class Com
   end
 
   def shutdown (reason)
-
+    @sp.close
+  end
+  def write (message)
+    @sp.write(message);
+  end
+  def read ()
+    return @sp.getbyte
   end
 end
