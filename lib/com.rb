@@ -37,13 +37,29 @@ class Com
     return true;
   end
 
-  def shutdown (reason)
+  def shutdown (reason = "DEFAULT")
     @sp.close
+    puts(reason)
   end
+
   def write (message)
     @sp.write(message);
   end
+
   def read ()
-    return @sp.getbyte
+    r = @sp.read(1);
+    rarr = [];
+    r = (r == "$" ? nil : r);
+    while (r != "$")
+      rarr << r;
+    end
+    p rarr;
+  end
+end
+
+
+class String
+  def string_between_markers marker1, marker2
+    self[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
   end
 end
