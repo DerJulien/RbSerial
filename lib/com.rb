@@ -1,7 +1,9 @@
 require "rubyserial"
+require 'securerandom'
 
 class Com
-
+SEPERATOR = "%"
+KEY = "$"
   def initialize (baud = 9600, data = 8)
     @baud_rate = baud;
     @data_bits = data;
@@ -46,20 +48,29 @@ class Com
     @sp.write(message);
   end
 
-  def read ()
+#--------------------------------- TODO --------------------------------------
+  def write_ensure (message)
+    id = Com::KEY + SecureRandom.uuid + Com::KEY;
+    p id
+    #while (self.read_string != Com::KEY+id)
+    #  @sp.write(message);
+    #end
+  end
+#--------------------------------- TODO --------------------------------------
+  def read_string ()
     r = @sp.read(1);
+
+    while (r != Com::SEPERATOR)
+      r = @sp.read(1);
+    end
+
     rarr = [];
-    r = (r == "$" ? nil : r);
-    while (r != "$")
+
+    while (r != nil && r != "")
+      r = @sp.read(1);
+      break if r == Com::SEPERATOR
       rarr << r;
     end
-    p rarr;
-  end
-end
-
-
-class String
-  def string_between_markers marker1, marker2
-    self[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
+    return rarr.join;
   end
 end
